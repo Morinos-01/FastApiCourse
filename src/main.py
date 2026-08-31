@@ -15,7 +15,8 @@ app = FastAPI()
 
 app.include_router(router_hotels)
 
-
+def func():
+    pass
 
 
 
