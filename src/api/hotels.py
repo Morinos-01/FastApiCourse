@@ -1,55 +1,60 @@
-from fastapi import Query, APIRouter
-from src.schemas.hotels import *
+from fastapi import APIRouter, Body, Query
+
 from src.api.dependencies import PaginationDep
+from src.database import async_session_maker
+from src.repositories.hotels import HotelRepository
+from src.schemas.hotels import Hotel, HotelPatch
+
 
 
 router = APIRouter(prefix="/hotels", tags=["Отели", ])
 
-hotels = [
-    {"id": 1, "title": "Sochi", "name": "sochi"},
-    {"id": 2, "title": "Дубай", "name": 'dubai'},
-    {"id": 3, "title": "Мальдивы", "name": 'maldivi'},
-    {"id": 4, "title": "Гелледжик", "name": 'gelendjik'},
-    {"id": 5, "title": "Ханой", "name": 'hanoi'},
-    {"id": 6, "title": "Дананг", "name": 'danang'},
-    {"id": 7, "title": "Москва", "name": 'moskva'},
-    {"id": 8, "title": "Майами", "name": 'maiami'},
-    {"id": 9, "title": "Токио", "name": 'tokio'},
-    {"id": 10, "title": "Гонконг", "name": 'gonkong'},
-    
-]
+
 
 
 
 # Метод Get, вернуть сущности
 @router.get("")
-def get_hotels(
+async def get_hotels(
     pagination: PaginationDep,
-    id: int | None = Query(default=None, description="Айдишник"),
     title: str | None = Query(default=None, description="Название отеля"),
+    location: str | None = Query(default=None, description="Адрес"),
     ):
+    per_page = pagination.per_page or 5
+    async with async_session_maker() as session:
+        return await HotelRepository(session).get_all(
+            title=title,
+            location=location,
+            limit=per_page,
+            offset=per_page*(pagination.page-1)
+        )
 
-    hotels_ = []
-    for hotel in hotels:
-        if id and hotel["id"] != id:
-            continue
-        if title and hotel["title"] != title:
-            continue
-        hotels_.append(hotel)
-    
-    return hotels_[pagination.per_page*(pagination.page-1):][:pagination.per_page]
 
 
 # метод Post, создание сущности
 @router.post("")
-def create_hotel(hotel_data: Hotel):
-    global hotels
-    hotels.append({ 
-        "id": hotels[-1]["id"] + 1,
-        "title": hotel_data.title,
-        "name": hotel_data.name
+async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
+            "1": {
+                "summary": "Первый вариант",
+                "value": {                  
+                    "title": "Отель у моря",
+                    "location": "Сочи"
+                }
+            },
+            "2": {
+                "summary": "Второй вариант",
+                "value": {
+                    "title": "Гостиница Центральная",
+                    "location": "Москва"
+                }
+            }
         })
-    return {"Status": "Ok"}
+):
+    async with async_session_maker() as session:
+        hotel = await HotelRepository(session).add(hotel_data)
+        await session.commit()
+
+        return {"Status": "Ok", "data": hotel}
 
 
 # Метод Delete, удалить сущность
@@ -82,7 +87,7 @@ def put_hotel(id_hotel: int, hotel_data: Hotel):
            )
 def path_hotel(
     id_hotel: int, 
-    hotel_in: HotelPut
+    hotel_in: HotelPatch
     ):
     hotel = [hotel for hotel in hotels if hotel["id"] == id_hotel][0]
     if hotel_in.title is not None:

@@ -1,11 +1,11 @@
 from pydantic import BaseModel
 
 
-class HotelPut(BaseModel):
+class HotelPatch(BaseModel):
     title: str | None = None
-    name: str | None = None
+    location: str | None = None
 
 
 class Hotel(BaseModel):
     title: str
-    name: str
+    location: str
