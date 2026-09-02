@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from pydantic import BaseModel
+from src.schemas.hotels import Hotel
 
 from src.repositories.base import BaseRepository
 from src.models.hotels import HotelsOrm
@@ -8,8 +8,9 @@ from src.models.hotels import HotelsOrm
 
 class HotelRepository(BaseRepository):
     model = HotelsOrm
+    schema = Hotel
 
-    async def get_all(
+    async def get_all1(
             self,
             title,
             location,
@@ -30,14 +31,3 @@ class HotelRepository(BaseRepository):
         hotels = result.scalars().all()
         return hotels
 
-
-    async def edit(
-            self,
-            data: BaseModel
-    ):
-        ...
-
-    async def delete(
-            self,
-    ):
-        ...

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Query
 from src.api.dependencies import PaginationDep
 from src.database import async_session_maker
 from src.repositories.hotels import HotelRepository
-from src.schemas.hotels import Hotel, HotelPatch
+from src.schemas.hotels import HotelAdd, HotelPatch
 
 
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/hotels", tags=["Отели", ])
 
 
 
-# Метод Get, вернуть сущности
+# Метод Get, вернуть отели
 @router.get("")
 async def get_hotels(
     pagination: PaginationDep,
@@ -30,10 +30,17 @@ async def get_hotels(
         )
 
 
+# Метод Get, вернуть один отель по его id
+@router.get("/{hotel_id}")
+async def get_hotel(hotel_id: int):
+    async with async_session_maker() as session:
+        return await HotelRepository(session).get_one_or_none(id=hotel_id)
+
+
 
 # метод Post, создание сущности
 @router.post("")
-async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
+async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
             "1": {
                 "summary": "Первый вариант",
                 "value": {                  
@@ -59,39 +66,43 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
 
 # Метод Delete, удалить сущность
 @router.delete("/{hotel_id}")
-def delete_hostels(hotel_id: int):
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel["id"]!=hotel_id]
+async def delete_hostels(hotel_id: int):
+    async with async_session_maker() as session:
+        await HotelRepository(session).delete(id=hotel_id)
+        await session.commit()
+
     return {"Status": "Ok"}
 
 
 
+
 # Метод Put, Полностью заменить элементы сущности
-@router.put("/{id_hotel}")
-def put_hotel(id_hotel: int, hotel_data: Hotel):
-    hotel = [hotel for hotel in hotels if hotel["id"] == id_hotel][0]
-    hotel["title"] = hotel_data.title
-    hotel["name"] = hotel_data.name
+@router.put("/{hotel_id}")
+async def put_hotel(hotel_id: int, hotel_data: HotelAdd):
+    async with async_session_maker() as session:
+        await HotelRepository(session).edit(data=hotel_data, id=hotel_id)
+        await session.commit()
+
     return {"status": "ok"}
-
-
 
 
 
 
 # Метод Path, частично заменить элементы сущности
 @router.patch(
-        "/{id_hotel}",
+        "/{hotel_id}",
         summary="Частичное обновление данных об отеле",
         description="Тут мы частично обновляем данные об отеле"
            )
-def path_hotel(
-    id_hotel: int, 
-    hotel_in: HotelPatch
+async def partially_edit_hotel(
+    hotel_id: int, 
+    hotel_data: HotelPatch
     ):
-    hotel = [hotel for hotel in hotels if hotel["id"] == id_hotel][0]
-    if hotel_in.title is not None:
-        hotel["title"] = hotel_in.title
-    if hotel_in.name is not None:
-        hotel["name"] = hotel_in.name
+    async with async_session_maker() as session:
+        await HotelRepository(session).edit(
+            data=hotel_data,
+            exclude_unset=True,
+            id=hotel_id
+        )
+        await session.commit()
     return {"status": "good"}
