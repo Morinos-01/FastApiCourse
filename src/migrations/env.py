@@ -10,6 +10,7 @@ from src.database import Base
 # Обязательно импортируем все модели, чтобы Alembic их увидел!
 from src.models.hotels import HotelsOrm
 from src.models.rooms import RoomsOrm
+from src.models.users import UsersOrm
 from src.config import settings
 
 # this is the Alembic Config object

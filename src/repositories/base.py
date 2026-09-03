@@ -23,6 +23,7 @@ class BaseRepository:
         model = result.scalars().one_or_none()
         if model is None:
             return model
+        
         return self.schema.model_validate(model, from_attributes=True)
 
 
