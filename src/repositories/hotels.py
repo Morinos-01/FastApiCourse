@@ -10,7 +10,7 @@ class HotelRepository(BaseRepository):
     model = HotelsOrm
     schema = Hotel
 
-    async def get_all1(
+    async def get_all(
             self,
             title,
             location,
@@ -29,5 +29,5 @@ class HotelRepository(BaseRepository):
         )
         result = await self.session.execute(query)
         hotels = result.scalars().all()
-        return hotels
+        return [self.schema.model_validate(model, from_attributes=True) for model in hotels]
 

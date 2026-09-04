@@ -41,21 +41,21 @@ async def get_hotel(hotel_id: int):
 # метод Post, создание сущности
 @router.post("")
 async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
-            "1": {
-                "summary": "Первый вариант",
-                "value": {                  
-                    "title": "Отель у моря",
-                    "location": "Сочи"
-                }
-            },
-            "2": {
-                "summary": "Второй вариант",
-                "value": {
-                    "title": "Гостиница Центральная",
-                    "location": "Москва"
-                }
+        "1": {
+            "summary": "Первый вариант",
+            "value": {                  
+                "title": "Отель у моря",
+                "location": "Сочи"
             }
-        })
+        },
+        "2": {
+            "summary": "Второй вариант",
+            "value": {
+                "title": "Гостиница Центральная",
+                "location": "Москва"
+            }
+        }
+    })
 ):
     async with async_session_maker() as session:
         hotel = await HotelRepository(session).add(hotel_data)

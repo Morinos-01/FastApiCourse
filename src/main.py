@@ -8,7 +8,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from src.api.hotels import router as router_hotels
-from api.auth import router as router_users
+from src.api.rooms import router as router_rooms
+from src.api.auth import router as router_users
 from src.database import *
 
 app = FastAPI()
@@ -16,6 +17,7 @@ app = FastAPI()
 
 app.include_router(router_users)
 app.include_router(router_hotels)
+app.include_router(router_rooms)
 
 
 
