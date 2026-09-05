@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class RoomAdd(BaseModel):
-    hotel_id: int = None
+    hotel_id: int
     title: str
     description: str | None
     price: int
