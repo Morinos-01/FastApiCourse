@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
+from datetime import date
 
 from src.schemas.rooms import RoomAdd, RoomPatch, RoomPut, RoomAddRequest
 from src.api.dependencies import PaginationDep, DBDep
@@ -13,14 +14,22 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
 async def get_rooms(
     db: DBDep,
     hotel_id: int,
-    pagination: PaginationDep
 ):
-    per_page = pagination.per_page or 5
-    return await db.rooms.get_all(
-        limit=per_page,
-        offset=per_page*(pagination.page-1),
+    return await db.rooms.get_filtered(
         hotel_id=hotel_id
     )
+
+
+
+#Вернуть, доступные на определенные даты, номера по определенному отелю
+@router.get("/{hotel_id}/available_rooms")
+async def get_available_rooms(
+    db: DBDep,
+    hotel_id: int,
+    date_from: date = Query(example="2026-09-04"),
+    date_to: date = Query(example="2026-09-06"),
+):
+    return await db.rooms.get_filtered_by_time(hotel_id, date_from=date_from, date_to=date_to)
 
 
 
