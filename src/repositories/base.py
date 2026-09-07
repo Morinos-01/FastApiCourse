@@ -1,11 +1,14 @@
 from sqlalchemy import select, insert, delete, update
 from pydantic import BaseModel
+from typing import List
+
+from src.repositories.mappers.base import DataMapper
 
 
 
 class BaseRepository:
     model = None
-    schema = None
+    mapper: DataMapper = None
 
     def __init__(self, session):
         self.session = session
@@ -16,7 +19,7 @@ class BaseRepository:
         query = select(self.model)
         result = await self.session.execute(query)
 
-        return [self.schema.model_validate(model, from_attributes=True) for model in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(model) for model in result.scalars().all()]
 
 
 #Получить с фильтром
@@ -31,7 +34,7 @@ class BaseRepository:
             .filter_by(**filter_by)
         )
         result = await self.session.execute(query)
-        return [self.schema.model_validate(model, from_attributes=True) for model in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(model) for model in result.scalars().all()]
 
 
 #Получить одну единицу или None
@@ -42,7 +45,7 @@ class BaseRepository:
         if model is None:
             return model
         
-        return self.schema.model_validate(model, from_attributes=True)
+        return self.mapper.map_to_domain_entity(model)
 
 
 #Создать Сущность
@@ -57,7 +60,18 @@ class BaseRepository:
         )
         result = await self.session.execute(add_stmt)
         model = result.scalar_one()
-        return self.schema.model_validate(model, from_attributes=True)
+        return self.mapper.map_to_domain_entity(model)
+
+    #Создать несколько сущностей
+    async def add_bulk(
+            self,
+            data: List[BaseModel]
+    ):
+        add_stmt = (
+            insert(self.model)
+            .values([item.model_dump() for item in data])
+        )
+        await self.session.execute(add_stmt)
 
 
 #Изменить Сущность 

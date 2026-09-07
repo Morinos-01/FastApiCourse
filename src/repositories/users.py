@@ -10,7 +10,6 @@ from src.schemas.users import User, UserWithHashedPassword
 
 class UsersRepository(BaseRepository):
     model = UsersOrm
-    schema = User
 
     async def user_with_hashed_password(self, email: EmailStr):
         query = select(self.model).filter_by(email=email)

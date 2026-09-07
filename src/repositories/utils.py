@@ -11,6 +11,7 @@ def rooms_ids_for_booking(
     hotel_id: int | None = None
 
 ):
+    #Количество броней (и в каких номерах эти брони) на те даты, которые мы ввели
     rooms_count = (
         select(BookingsOrm.room_id, func.count("*").label("rooms_booked"))
         .select_from(BookingsOrm)
@@ -21,6 +22,7 @@ def rooms_ids_for_booking(
         .group_by(BookingsOrm.room_id)
         .cte(name="rooms_count")
     )
+    #Берем все номера и отнимаем из qiantity количество броней в номерах из первого акта
     rooms_left_table = (
         select(
             RoomsOrm.id.label("room_id"), 
@@ -30,19 +32,22 @@ def rooms_ids_for_booking(
         .outerjoin(rooms_count, RoomsOrm.id == rooms_count.c.room_id)   
         .cte(name="rooms_left_table")
     )
-
+    #Если мы смотрим по конкретному отелю, делаем такой подзапрос
     rooms_ids_for_hotel = (
         select(RoomsOrm.id)
         .select_from(RoomsOrm)
     )
+
     if hotel_id is not None:
 
         rooms_ids_for_hotel = (
             rooms_ids_for_hotel
             .filter_by(hotel_id=hotel_id)
         )
+
     rooms_ids_for_hotel = rooms_ids_for_hotel.subquery(name="rooms_ids_for_hotel")
 
+    #Финальный запрос
     query = (
         select(rooms_left_table.c.room_id)
         .filter(

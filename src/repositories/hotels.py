@@ -4,14 +4,14 @@ from sqlalchemy import select
 from src.repositories.base import BaseRepository
 from src.repositories.utils import rooms_ids_for_booking
 from src.models.hotels import HotelsOrm
-from src.schemas.hotels import Hotel
 from src.models.rooms import RoomsOrm
+from src.repositories.mappers.mappers import HotelDataMapper
 
 
 
 class HotelRepository(BaseRepository):
     model = HotelsOrm
-    schema = Hotel
+    mapper = HotelDataMapper
 
 
 #Получить список отелей со свободными номерами
@@ -47,5 +47,5 @@ class HotelRepository(BaseRepository):
 
         result = await self.session.execute(query)
         hotels = result.scalars().all()
-        return [self.schema.model_validate(model, from_attributes=True) for model in hotels]
+        return [self.mapper.map_to_domain_entity(model) for model in hotels]
 
