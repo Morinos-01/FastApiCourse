@@ -2,17 +2,20 @@ from sqlalchemy import select, delete, insert
 
 from src.repositories.base import BaseRepository
 from src.models.fasilities import FasilitiesOrm, RoomsFasilitiesOrm
+from src.repositories.mappers.mappers import FasilitiesDataMapper, RoomsFasilitiesDataMapper
 
 
 #Репозиторий для таблицы Fasilities
 class FasilitiesRepository(BaseRepository):
     model = FasilitiesOrm
+    mapper = FasilitiesDataMapper
 
 
 
 #Репозиторий для вспомогательной таблицы
 class RoomsFasilities(BaseRepository):
     model = RoomsFasilitiesOrm
+    mapper = RoomsFasilitiesDataMapper
 
 
     #Добавить связь Rooms и Fasilities в вспомогательную таблицу

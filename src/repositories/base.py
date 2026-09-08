@@ -19,7 +19,7 @@ class BaseRepository:
         query = select(self.model)
         result = await self.session.execute(query)
 
-        return [self.mapper.map_to_domain_entity(model) for model in result.scalars().all()]
+        return [self.mapper.map_to_domain_entity(data=model) for model in result.scalars().all()]
 
 
 #Получить с фильтром
