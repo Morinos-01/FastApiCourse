@@ -7,6 +7,8 @@ from src.models.fasilities import FasilitiesOrm, RoomsFasilitiesOrm
 from src.schemas.fasilities import Fasilities, RoomsFasilities
 from src.models.users import UsersOrm
 from src.schemas.users import User
+from src.models.rooms import RoomsOrm
+from src.schemas.rooms import Room
 
 
 
@@ -39,3 +41,7 @@ class UsersDataMapper(DataMapper):
     db_model = UsersOrm
     schema = User
 
+
+class RoomDataMapper(DataMapper):
+    db_model = RoomsOrm
+    schema = Room

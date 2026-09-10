@@ -18,7 +18,7 @@ class FasilitiesPath(BaseModel):
 #Схемы для вспомогательной таблицы RoomsFasilities
 class RoomsFasilitiesAdd(BaseModel):
     room_id: int
-    fasilitie_id: int
+    fasilitie_id: int | None = None
 
 
 class RoomsFasilities(RoomsFasilitiesAdd):

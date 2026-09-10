@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from datetime import date
 
 from src.repositories.base import BaseRepository
 from src.models.bookings import BookingsOrm
@@ -12,7 +13,10 @@ class BookingsRepository(BaseRepository):
     model = BookingsOrm
     mapper = BookingsDataMapper
 
-    async def get_all_for_me(self, **filter_by):
-        query = select(self.model).filter_by(**filter_by)
-        result = await self.session.execute(query)
-        return [self.mapper.map_to_domain_entity(model) for model in result.scalars().all()]
+    async def get_bookings_with_today_checking(self):
+        query = (
+            select(self.model)
+            .filter(self.model.date_from == date.today())
+        )
+        res = await self.session.execute(query)
+        return [self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()]

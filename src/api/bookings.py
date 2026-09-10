@@ -8,6 +8,8 @@ from src.schemas.bookings import BookingAddRequest, BookingAdd
 router = APIRouter(prefix="/bookings", tags=["Бронирования"])
 
 
+
+#создать бронь
 @router.post("")
 async def create_bookings(
     user_id: UserIdDep,
@@ -22,11 +24,13 @@ async def create_bookings(
     return {"status": "ok", "booking": booking}
 
 
+#получить все брони без авторизации
 @router.get("")
 async def get_bookings(db: DBDep):
     return await db.bookings.get_all()
 
 
+#Получить брони авторизированного пользователя
 @router.get("/me")
 async def get_my_bookings(db: DBDep, user_id: UserIdDep):
-    return await db.bookings.get_all_for_me(user_id=user_id)
+    return await db.bookings.get_filtered(user_id=user_id)

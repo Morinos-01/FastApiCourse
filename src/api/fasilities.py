@@ -5,6 +5,7 @@ import json
 from src.api.dependencies import DBDep
 from src.schemas.fasilities import FasilitiesAdd
 from src.init import redis_manager
+from src.tasks.tasks import test_task
 
 
 
@@ -30,6 +31,9 @@ async def get_fasilities(db: DBDep):
 async def create_fasilitie(db: DBDep, fasilitie_data: FasilitiesAdd):
     fasilitie = await db.fasilities.add(fasilitie_data)
     await db.commit()
+
+    test_task.delay()
+    
     return {"status": "Ok", "fasilitie": fasilitie}
 
 

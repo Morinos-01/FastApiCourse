@@ -39,7 +39,7 @@ def get_db_manager():
 
 async def get_db():
     async with get_db_manager() as db:
-        yield db
+        yield db 
 
 
 

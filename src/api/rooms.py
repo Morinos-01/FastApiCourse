@@ -16,9 +16,7 @@ async def get_rooms(
     db: DBDep,
     hotel_id: int,
 ):
-    return await db.rooms.get_filtered(
-        hotel_id=hotel_id
-    )
+    return await db.rooms.get_filtered(hotel_id=hotel_id)
 
 
 

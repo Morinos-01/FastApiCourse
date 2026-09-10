@@ -5,9 +5,11 @@ from src.repositories.base import BaseRepository
 from src.repositories.utils import rooms_ids_for_booking
 from src.models.rooms import RoomsOrm
 from src.schemas.rooms import RoomWithRels
+from src.repositories.mappers.mappers import RoomDataMapper
 
 class RoomsRepository(BaseRepository):
     model = RoomsOrm
+    mapper = RoomDataMapper
 
     #Получить свободные номера в эти даты
     async def get_filtered_by_time(
