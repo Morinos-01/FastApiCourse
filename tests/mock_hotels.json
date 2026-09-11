@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Grand Hotel Europe",
+    "location": "г. Санкт-Петербург, ул. Михайловская, 1/7"
+  },
+  {
+    "id": 2,
+    "title": "Cosmos Moscow VDNH",
+    "location": "г. Москва, пр-т Мира, 150"
+  },
+  {
+    "id": 3,
+    "title": "Sochi Beach Resort & Spa",
+    "location": "г. Сочи, Курортный пр-т, 89"
+  }
+]
