@@ -5,6 +5,13 @@ from src.models.rooms import RoomsOrm
 from src.models.bookings import BookingsOrm
 
 
+
+"""
+Функция возваращает запрос
+Этот запрос нужен для получения номеров отеля со свободными комнатами на определенную дату
+"""
+
+
 def rooms_ids_for_booking(
     date_from: date,
     date_to: date,

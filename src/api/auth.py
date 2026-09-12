@@ -21,7 +21,7 @@ async def register_user(db: DBDep, data: UserRequestAdd):
     except IntegrityError:
         raise HTTPException(status_code = 409, detail = "Такой пользователь уже имеется")
 
-    return {"status": "good"}
+    return {"status": "ok"}
 
 
 

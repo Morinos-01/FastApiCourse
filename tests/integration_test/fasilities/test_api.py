@@ -1,3 +1,4 @@
+#тест апи на получение fasilities
 async def test_get_fasilities(ac):
     response = await ac.get("/fasilities",)
     print(f"{response.json()=}")
@@ -6,7 +7,7 @@ async def test_get_fasilities(ac):
 
 
 
-
+#тест апи на создание fasilitie
 async def test_post_fasilities(ac):
     response = await ac.post(
         url="/fasilities",

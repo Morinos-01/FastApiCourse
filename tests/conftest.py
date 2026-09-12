@@ -1,5 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
+from unittest.mock import AsyncMock
+
 
 import json
 from pathlib import Path
@@ -16,6 +18,7 @@ from src.schemas.fasilities import FasilitiesAdd
 from src.api.dependencies import get_db
 
 
+
 """
 Этот файл запускается одним из первых, когда мы запускаем тесты
 """
@@ -30,7 +33,7 @@ app.dependency_overrides[get_db] = get_db_null_pool
 
 
 #создание объекта подклдючения к бд
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def db() -> AsyncGenerator[DBManager, None]:
     async for db in get_db_null_pool():
         yield db
@@ -38,7 +41,7 @@ async def db() -> AsyncGenerator[DBManager, None]:
 
 #создания объекта отправки запросов
 @pytest.fixture(scope="session")
-async def ac()->AsyncGenerator[ASGITransport, None]:
+async def ac()->AsyncGenerator[AsyncClient, None]:
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
@@ -66,7 +69,7 @@ async def setup_database(check_test_mode):
 
     #Вставить данные в бд
 @pytest.fixture(scope="session", autouse=True)
-async def add_data_in_database(setup_database, db):
+async def add_data_in_database(setup_database):
     base_dir = Path(__file__).parent
     hotels_file = base_dir / "mock_hotels.json"
     rooms_file = base_dir / "mock_rooms.json"
@@ -84,11 +87,11 @@ async def add_data_in_database(setup_database, db):
     data_hotels :list[HotelAdd] = [HotelAdd.model_validate(hotel) for hotel in dict_hotels]
     data_rooms :list[RoomAdd] = [RoomAdd.model_validate(room) for room in dict_rooms]
     data_fasilities :list[FasilitiesAdd] = [FasilitiesAdd.model_validate(fasilitie) for fasilitie in dict_fasilities]
-    
-    await db.hotels.add_bulk(data_hotels)
-    await db.rooms.add_bulk(data_rooms)
-    await db.fasilities.add_bulk(data_fasilities)
-    await db.commit()
+    async with DBManager(session_factory=async_session_maker_null_pool) as db:
+        await db.hotels.add_bulk(data_hotels)
+        await db.rooms.add_bulk(data_rooms)
+        await db.fasilities.add_bulk(data_fasilities)
+        await db.commit()
 
 
 
@@ -103,5 +106,35 @@ async def register_user(add_data_in_database, ac):
             "email": "user@e324xample.com", 
             "password": "string"
         },
-        )
+    )
 
+
+#Запрос на аутентификацию пользователя
+@pytest.fixture(scope="session")
+async def authenticated_ac(register_user, ac):
+    await ac.post(
+        url="/users/login",
+        json={
+            "email": "user@e324xample.com", 
+            "password": "string"
+        },
+    )
+    assert ac.cookies["access_token"]
+    yield ac
+
+
+
+
+    
+
+#Мок для запросов в Redis
+@pytest.fixture(autouse=True)
+def mock_redis(monkeypatch):
+    monkeypatch.setattr(
+        "src.connectors.redis_connector.RedisManager.set",
+        AsyncMock(return_value=None)
+    )
+    monkeypatch.setattr(
+        "src.connectors.redis_connector.RedisManager.get",
+        AsyncMock(return_value=None)
+    )
