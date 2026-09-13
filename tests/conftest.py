@@ -1,23 +1,20 @@
-import pytest
-from httpx import AsyncClient, ASGITransport
+import json
+from collections.abc import AsyncGenerator
+from pathlib import Path
 from unittest.mock import AsyncMock
 
+import pytest
+from httpx import ASGITransport, AsyncClient
 
-import json
-from pathlib import Path
-from collections.abc import AsyncGenerator
-
-from src.database import Base, engine_null_pool, async_session_maker_null_pool
-from src.models.__init__ import *
+from src.api.dependencies import get_db
 from src.config import settings
+from src.database import Base, async_session_maker_null_pool, engine_null_pool
 from src.main import app
-from src.utils.db_manager import DBManager
+from src.models.__init__ import *
+from src.schemas.fasilities import FasilitiesAdd
 from src.schemas.hotels import HotelAdd
 from src.schemas.rooms import RoomAdd
-from src.schemas.fasilities import FasilitiesAdd
-from src.api.dependencies import get_db
-
-
+from src.utils.db_manager import DBManager
 
 """
 Этот файл запускается одним из первых, когда мы запускаем тесты
@@ -75,13 +72,13 @@ async def add_data_in_database(setup_database):
     rooms_file = base_dir / "mock_rooms.json"
     fasilities_file = base_dir / "mock_fasilities.json"
 
-    with open(hotels_file, "r", encoding="utf-8") as file:
+    with open(hotels_file, "r", encoding="utf-8") as file: #noqa: ASYNC230
         dict_hotels = json.load(file)
 
-    with open(rooms_file, "r", encoding="utf-8") as file:
+    with open(rooms_file, "r", encoding="utf-8") as file: #noqa: ASYNC230
         dict_rooms = json.load(file)
 
-    with open(fasilities_file, "r", encoding="utf-8") as file:
+    with open(fasilities_file, "r", encoding="utf-8") as file: #noqa: ASYNC230
         dict_fasilities = json.load(file)
 
     data_hotels :list[HotelAdd] = [HotelAdd.model_validate(hotel) for hotel in dict_hotels]

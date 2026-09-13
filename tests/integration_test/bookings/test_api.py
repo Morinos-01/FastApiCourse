@@ -2,6 +2,7 @@ import pytest
 
 from tests.conftest import get_db_null_pool
 
+
 #тест на добавление броней
 @pytest.mark.parametrize("room_id, date_from, date_to, status_code",[
     (1, "2024-08-01", "2024-08-10", 200),

@@ -1,9 +1,8 @@
-from sqlalchemy import select, insert, delete, update
+
 from pydantic import BaseModel
-from typing import List
+from sqlalchemy import delete, insert, select, update
 
 from src.repositories.mappers.base import DataMapper
-
 
 
 class BaseRepository:
@@ -65,7 +64,7 @@ class BaseRepository:
     #Создать несколько сущностей
     async def add_bulk(
             self,
-            data: List[BaseModel]
+            data: list[BaseModel]
     ):
         add_stmt = (
             insert(self.model)

@@ -1,8 +1,8 @@
-import time
 import asyncio
+import time
+
 import uvicorn
 from fastapi import FastAPI
-
 
 app = FastAPI(docs_url=None)
 

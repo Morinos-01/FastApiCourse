@@ -1,16 +1,14 @@
-from src.repositories.mappers.base import DataMapper
-from src.models.hotels import HotelsOrm
-from src.schemas.hotels import Hotel
 from src.models.bookings import BookingsOrm
-from src.schemas.bookings import Booking
 from src.models.fasilities import FasilitiesOrm, RoomsFasilitiesOrm
-from src.schemas.fasilities import Fasilities, RoomsFasilities
-from src.models.users import UsersOrm
-from src.schemas.users import User
+from src.models.hotels import HotelsOrm
 from src.models.rooms import RoomsOrm
+from src.models.users import UsersOrm
+from src.repositories.mappers.base import DataMapper
+from src.schemas.bookings import Booking
+from src.schemas.fasilities import Fasilities, RoomsFasilities
+from src.schemas.hotels import Hotel
 from src.schemas.rooms import Room
-
-
+from src.schemas.users import User
 
 
 class HotelDataMapper(DataMapper):

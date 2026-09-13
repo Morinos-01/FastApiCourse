@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Response
-
 import json
 
+from fastapi import APIRouter, Response
+
 from src.api.dependencies import DBDep
-from src.schemas.fasilities import FasilitiesAdd
 from src.init import redis_manager
+from src.schemas.fasilities import FasilitiesAdd
 from src.tasks.tasks import test_task
-
-
 
 router = APIRouter(prefix="/fasilities", tags=["Удобства"])
 

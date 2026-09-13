@@ -1,21 +1,19 @@
-from fastapi import FastAPI
-import uvicorn
-from contextlib import asynccontextmanager
-
-
 import sys
+from contextlib import asynccontextmanager
 from pathlib import Path
 
+import uvicorn
+from fastapi import FastAPI
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.init import redis_manager
-from src.api.hotels import router as router_hotels
-from src.api.rooms import router as router_rooms
 from src.api.auth import router as router_users
 from src.api.bookings import router as router_bookings
 from src.api.fasilities import router as router_fasilities
+from src.api.hotels import router as router_hotels
 from src.api.images import router as router_images
+from src.api.rooms import router as router_rooms
+from src.init import redis_manager
 
 
 @asynccontextmanager

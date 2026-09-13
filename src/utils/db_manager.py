@@ -1,10 +1,11 @@
-from src.repositories.hotels import HotelRepository
-from src.repositories.users import UsersRepository
-from src.repositories.rooms import RoomsRepository
 from src.repositories.bookings import BookingsRepository
 from src.repositories.fasilities import FasilitiesRepository, RoomsFasilities
+from src.repositories.hotels import HotelRepository
+from src.repositories.rooms import RoomsRepository
+from src.repositories.users import UsersRepository
 
-class DBManager():
+
+class DBManager:
     def __init__(self, session_factory):
         self.session_factory = session_factory
 

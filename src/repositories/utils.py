@@ -1,10 +1,9 @@
-from sqlalchemy import select, func
 from datetime import date
 
-from src.models.rooms import RoomsOrm
+from sqlalchemy import func, select
+
 from src.models.bookings import BookingsOrm
-
-
+from src.models.rooms import RoomsOrm
 
 """
 Функция возваращает запрос

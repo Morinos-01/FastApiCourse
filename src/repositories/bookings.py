@@ -1,17 +1,14 @@
-from sqlalchemy import select, insert
+from datetime import datetime, timezone
+
 from fastapi import HTTPException
+from sqlalchemy import insert, select
 
-from datetime import date
-from pydantic import BaseModel
-
-from src.repositories.base import BaseRepository
 from src.models.bookings import BookingsOrm
+from src.models.rooms import RoomsOrm
+from src.repositories.base import BaseRepository
 from src.repositories.mappers.mappers import BookingsDataMapper
 from src.repositories.utils import rooms_ids_for_booking
-from src.models.rooms import RoomsOrm
 from src.schemas.bookings import BookingAddRequest
-
-
 
 
 class BookingsRepository(BaseRepository):
@@ -21,7 +18,7 @@ class BookingsRepository(BaseRepository):
     async def get_bookings_with_today_checking(self):
         query = (
             select(self.model)
-            .filter(self.model.date_from == date.today())
+            .filter(self.model.date_from == datetime.now(timezone.utc).date())
         )
         res = await self.session.execute(query)
         return [self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()]

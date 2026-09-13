@@ -1,14 +1,12 @@
-from PIL import Image
-
+import asyncio
 from pathlib import Path
 from time import sleep
-import asyncio
 
+from PIL import Image
+
+from src.database import async_session_maker_null_pool
 from src.tasks.celery_app import celery_instance
 from src.utils.db_manager import DBManager
-from src.database import async_session_maker_null_pool
-
-
 
 
 #Простая фоновая задача

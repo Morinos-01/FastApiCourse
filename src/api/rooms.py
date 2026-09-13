@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Body, Query
 from datetime import date
 
-from src.schemas.rooms import RoomAdd, RoomPatch, RoomAddRequest, RoomPatchRequest
-from src.schemas.fasilities import RoomsFasilitiesAdd
+from fastapi import APIRouter, Body, Query
+
 from src.api.dependencies import DBDep
+from src.schemas.fasilities import RoomsFasilitiesAdd
+from src.schemas.rooms import RoomAdd, RoomAddRequest, RoomPatch, RoomPatchRequest
 
 router = APIRouter(prefix="/hotels", tags=["Номера"])
 

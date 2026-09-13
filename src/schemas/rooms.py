@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 from src.schemas.fasilities import Fasilities
 
+
 class RoomAdd(BaseModel):
     hotel_id: int
     title: str

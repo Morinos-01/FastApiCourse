@@ -1,8 +1,11 @@
-from sqlalchemy import select, delete, insert
+from sqlalchemy import delete, insert, select
 
-from src.repositories.base import BaseRepository
 from src.models.fasilities import FasilitiesOrm, RoomsFasilitiesOrm
-from src.repositories.mappers.mappers import FasilitiesDataMapper, RoomsFasilitiesDataMapper
+from src.repositories.base import BaseRepository
+from src.repositories.mappers.mappers import (
+    FasilitiesDataMapper,
+    RoomsFasilitiesDataMapper,
+)
 
 
 #Репозиторий для таблицы Fasilities
