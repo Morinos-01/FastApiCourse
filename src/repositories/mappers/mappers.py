@@ -16,18 +16,14 @@ class HotelDataMapper(DataMapper):
     schema = Hotel
 
 
-
-
 class BookingsDataMapper(DataMapper):
     db_model = BookingsOrm
     schema = Booking
 
 
-
 class FasilitiesDataMapper(DataMapper):
     db_model = FasilitiesOrm
     schema = Fasilities
-
 
 
 class RoomsFasilitiesDataMapper(DataMapper):

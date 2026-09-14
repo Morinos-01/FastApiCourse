@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import redis.asyncio as redis
@@ -12,14 +13,16 @@ class RedisManager:
 
     async def connect(self) -> None:
         """Инициализирует подключение и проверяет доступность сервера."""
+        logging.info(f"Начинаю подключение к Redis host={self.host}, port={self.port}")
         self.client = redis.Redis(
-            host=self.host, 
-            port=self.port, 
-            db=self.db, 
-            decode_responses=True  # Автоматически декодирует байты в строки
+            host=self.host,
+            port=self.port,
+            db=self.db,
+            decode_responses=True,  # Автоматически декодирует байты в строки
         )
         # Отправляем ping для проверки, что сервер реально доступен
         await self.client.ping()
+        logging.info(f"Успешное подключение к Redis host={self.host}, port={self.port}")
 
     async def set(self, key: str, value: Any, expire: int | None = None) -> bool:
         """Сохраняет пару ключ-значение. expire — время жизни в секундах."""

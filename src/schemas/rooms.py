@@ -10,9 +10,9 @@ class RoomAdd(BaseModel):
     price: int
     qiantity: int
 
+
 class Room(RoomAdd):
     id: int
-
 
 
 class RoomAddRequest(BaseModel):
@@ -23,11 +23,8 @@ class RoomAddRequest(BaseModel):
     facilities_ids: list[int] = []
 
 
-
 class RoomWithRels(Room):
     fasilities: list[Fasilities]
-
-
 
 
 class RoomPatchRequest(BaseModel):
@@ -36,7 +33,7 @@ class RoomPatchRequest(BaseModel):
     price: int | None = None
     qiantity: int | None = None
     fasilities_ids: list[int] = []
-    
+
 
 class RoomPatch(BaseModel):
     hotel_id: int | None = None

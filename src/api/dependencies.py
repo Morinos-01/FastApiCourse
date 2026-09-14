@@ -8,40 +8,39 @@ from src.services.auth import auth_service
 from src.utils.db_manager import DBManager
 
 
-#Пагинация
+# Пагинация
 class PaginationParams(BaseModel):
-    page: Annotated [int | None, Query(1, gt=0)]
-    per_page: Annotated [int | None,  Query(None, gt=0, lt=30)]
+    page: Annotated[int | None, Query(1, gt=0)]
+    per_page: Annotated[int | None, Query(None, gt=0, lt=30)]
+
 
 PaginationDep = Annotated[PaginationParams, Depends()]
 
 
-
-#Предоставление JWT токена
-def get_token(request: Request)->str:
+# Предоставление JWT токена
+def get_token(request: Request) -> str:
     token = request.cookies.get("access_token", None)
     if not token:
         raise HTTPException(status_code=401, detail="Вы не предоставили токен доступа")
     return token
 
 
-def get_current_user_id(token: str = Depends(get_token))->int:
+def get_current_user_id(token: str = Depends(get_token)) -> int:
     data = auth_service.decode_jwt(token)
     return data["user_id"]
+
 
 UserIdDep = Annotated[int, Depends(get_current_user_id)]
 
 
-#Контекст менеджера
+# Контекст менеджера
 def get_db_manager():
     return DBManager(session_factory=async_session_maker)
 
 
-
 async def get_db():
     async with get_db_manager() as db:
-        yield db 
-
+        yield db
 
 
 DBDep = Annotated[DBManager, Depends(get_db)]

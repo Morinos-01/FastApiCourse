@@ -15,14 +15,13 @@ async def get_fasilities(db: DBDep):
     fasilities_caсhe = await redis_manager.get("fasilities")
     if fasilities_caсhe:
         return Response(content=fasilities_caсhe, media_type="application/json")
-    
+
     fasilities = await db.fasilities.get_all()
     _fasilities: list[dict] = [f.model_dump() for f in fasilities]
     fasilities_json = json.dumps(_fasilities)
     await redis_manager.set(key="fasilities", value=fasilities_json, expire=60)
 
-    return fasilities   
-
+    return fasilities
 
 
 @router.post("")
@@ -31,7 +30,5 @@ async def create_fasilitie(db: DBDep, fasilitie_data: FasilitiesAdd):
     await db.commit()
 
     test_task.delay()
-    
+
     return {"status": "Ok", "fasilitie": fasilitie}
-
-

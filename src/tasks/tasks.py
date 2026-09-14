@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 from time import sleep
+import logging
 
 from PIL import Image
 
@@ -9,17 +10,16 @@ from src.tasks.celery_app import celery_instance
 from src.utils.db_manager import DBManager
 
 
-#Простая фоновая задача
+# Простая фоновая задача
 @celery_instance.task
 def test_task():
     sleep(5)
-    print("я молодец")
+    logging.info("Я молодец")
 
 
-#сделать N размеры для изображения
+# сделать N размеры для изображения
 @celery_instance.task
 def resize_image(image_path: str):
-
 
     output_dir: str = "src/static/images"
     widths: tuple = (size for size in range(100, 1000))
@@ -68,17 +68,15 @@ def resize_image(image_path: str):
 
             resized_img.save(save_path, **save_kwargs)
             saved_files.append(save_path)
-    print("конец создания изображений")
+    logging.info("конец создания изображений")
 
 
-
-#Фоновая задача выполняющаяся каждые n-секунд
+# Фоновая задача выполняющаяся каждые n-секунд
 async def send_emails_to_users_with_today_checkin_helper():
-    print("Я ЗАПУСКАЮСЬ")
     async with DBManager(session_factory=async_session_maker_null_pool) as db:
         bookings = await db.bookings.get_bookings_with_today_checking()
-        print(f"{bookings=}")
-    
+        logging.debug(f"{bookings=}")
+
 
 @celery_instance.task(name="booking_today_checking")
 def send_emails_to_users_with_today_checkin():

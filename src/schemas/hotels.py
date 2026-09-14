@@ -6,10 +6,8 @@ class HotelAdd(BaseModel):
     location: str
 
 
-
 class Hotel(HotelAdd):
     id: int
-
 
 
 class HotelPatch(BaseModel):

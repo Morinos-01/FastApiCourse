@@ -9,7 +9,6 @@ class DBManager:
     def __init__(self, session_factory):
         self.session_factory = session_factory
 
-
     async def __aenter__(self, *args):
         self.session = self.session_factory()
 
@@ -26,7 +25,6 @@ class DBManager:
         if exc_type:
             await self.session.rollback()
         await self.session.close()
-
 
     async def commit(self):
         await self.session.commit()

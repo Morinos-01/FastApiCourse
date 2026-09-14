@@ -1,3 +1,4 @@
+import logging
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,6 +16,8 @@ from src.api.images import router as router_images
 from src.api.rooms import router as router_rooms
 from src.init import redis_manager
 
+logging.basicConfig(level=logging.INFO)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,7 +26,7 @@ async def lifespan(app: FastAPI):
     await redis_manager.disconnect()
 
 
-app = FastAPI(lifespan=lifespan) 
+app = FastAPI(lifespan=lifespan)
 
 
 app.include_router(router_users)
@@ -34,7 +37,5 @@ app.include_router(router_bookings)
 app.include_router(router_images)
 
 
-
-
-if __name__ == '__main__':
-    uvicorn.run(app="main:app", reload=True)    
+if __name__ == "__main__":
+    uvicorn.run(app="main:app", reload=True)

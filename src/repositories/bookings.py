@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 
-from fastapi import HTTPException
-from sqlalchemy import insert, select
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
 
+from src.exceptions import AllRoomsAreBookedException
 from src.models.bookings import BookingsOrm
 from src.models.rooms import RoomsOrm
 from src.repositories.base import BaseRepository
@@ -16,18 +17,15 @@ class BookingsRepository(BaseRepository):
     mapper = BookingsDataMapper
 
     async def get_bookings_with_today_checking(self):
-        query = (
-            select(self.model)
-            .filter(self.model.date_from == datetime.now(timezone.utc).date())
-        )
+        query = select(self.model).filter(self.model.date_from == datetime.now(timezone.utc).date())
         res = await self.session.execute(query)
         return [self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()]
 
     async def add_booking(self, booking_data: BookingAddRequest):
         available_rooms_query = rooms_ids_for_booking(
-        date_to=booking_data.date_to,
-        date_from=booking_data.date_from,
-    )
+            date_to=booking_data.date_to,
+            date_from=booking_data.date_from,
+        )
         room_query = (
             select(RoomsOrm)
             .select_from(RoomsOrm)
@@ -35,17 +33,9 @@ class BookingsRepository(BaseRepository):
             .filter_by(id=booking_data.room_id)
         )
         room_res = await self.session.execute(room_query)
-        room = room_res.scalars().one_or_none()
-        print(room)
-        if room is None:
-            raise HTTPException(status_code=422, detail="К сожалению, на выбранные даты нет свободных номеров.")
+        try:
+            room = room_res.scalars().one()
+        except NoResultFound:
+            raise AllRoomsAreBookedException
 
-        booking_add_stmt = (
-            insert(self.model)
-            .values(**booking_data.model_dump())
-            .returning(self.model)
-        )
-        result = await self.session.execute(booking_add_stmt)
-        model = result.scalar_one()
-        return self.mapper.map_to_domain_entity(model)
-        
+        return await self.add(booking_data)
