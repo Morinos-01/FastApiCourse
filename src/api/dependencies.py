@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, Query, Request
 from pydantic import BaseModel
+from aio_pika.abc import AbstractExchange
 
 from src.database import async_session_maker
 from src.services.auth import auth_service
@@ -44,3 +45,11 @@ async def get_db():
 
 
 DBDep = Annotated[DBManager, Depends(get_db)]
+
+
+# Получение exchange(обменника) для отправки в брокер сообщений
+def get_rabbit_exchange(request: Request):
+    return request.app.state.booking_exchange
+
+
+ExchangeDB = Annotated[AbstractExchange, Depends(get_rabbit_exchange)]

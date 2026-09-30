@@ -1,4 +1,6 @@
 agent-detector==1.1.0
+aio-pika==10.0.1
+aiormq==7.0.0
 alembic==1.19.1
 amqp==5.3.1
 annotated-doc==0.0.5
@@ -35,16 +37,20 @@ Mako==1.4.1
 markdown-it-py==4.2.0
 MarkupSafe==3.0.3
 mdurl==0.1.2
+multidict==6.8.0
 mypy_extensions==1.1.0
 nodeenv==1.10.0
 packaging==26.3
+pamqp==4.0.1
 passlib==1.7.4
 pathspec==1.1.1
 pendulum==3.2.0
+pika==1.4.4
 pillow==12.3.0
 platformdirs==4.11.5
 pluggy==1.6.0
 prompt_toolkit==3.0.53
+propcache==0.5.4
 pydantic==2.13.4
 pydantic-extra-types==2.11.1
 pydantic-settings==2.15.0
@@ -82,3 +88,4 @@ vine==5.1.0
 watchfiles==1.2.0
 wcwidth==0.8.3
 websockets==17.1
+yarl==1.25.1

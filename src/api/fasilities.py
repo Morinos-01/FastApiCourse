@@ -10,6 +10,7 @@ from src.tasks.tasks import test_task
 router = APIRouter(prefix="/fasilities", tags=["Удобства"])
 
 
+# Получить все удобства
 @router.get("")
 async def get_fasilities(db: DBDep):
     fasilities_caсhe = await redis_manager.get("fasilities")
@@ -24,6 +25,7 @@ async def get_fasilities(db: DBDep):
     return fasilities
 
 
+# Добавить удобство
 @router.post("")
 async def create_fasilitie(db: DBDep, fasilitie_data: FasilitiesAdd):
     fasilitie = await db.fasilities.add(fasilitie_data)

@@ -1,19 +1,24 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 
-from src.api.dependencies import DBDep, UserIdDep
+from src.api.dependencies import DBDep, UserIdDep, ExchangeDB
 from src.exceptions import (
     AllRoomsAreBookedException,
     ObjectNotFoundException,
     check_date_to_after_date_from,
 )
 from src.schemas.bookings import BookingAdd, BookingAddRequest
+from src.brokerrabbit.rabbitmq import publish_exchange
+from src.brokerrabbit.constants import BOOKING_ROUTING_KEY
+
 
 router = APIRouter(prefix="/bookings", tags=["Бронирования"])
 
 
 # создать бронь
 @router.post("")
-async def create_bookings(user_id: UserIdDep, db: DBDep, booking_data: BookingAddRequest):
+async def create_bookings(user_id: UserIdDep, db: DBDep, booking_data: BookingAddRequest, exchange: ExchangeDB):
     check_date_to_after_date_from(booking_data.date_from, booking_data.date_to)
 
     try:
@@ -30,6 +35,20 @@ async def create_bookings(user_id: UserIdDep, db: DBDep, booking_data: BookingAd
         raise HTTPException(status_code=409, detail=ex.detail)
 
     await db.commit()
+
+    event_data = {
+        "id": str(uuid.uuid4()),
+        "event": "do something",
+        "data": booking_data.room_id,
+    }
+
+    await publish_exchange(
+        exchange=exchange,
+        routing_key=BOOKING_ROUTING_KEY,
+        data=event_data,
+    )
+
+    
     return {"status": "ok", "booking": booking}
 
 

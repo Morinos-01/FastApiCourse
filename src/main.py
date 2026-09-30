@@ -15,6 +15,8 @@ from src.api.hotels import router as router_hotels
 from src.api.images import router as router_images
 from src.api.rooms import router as router_rooms
 from src.init import redis_manager
+from src.brokerrabbit.rabbitmq import connect_rabbitmq, declare_exchange
+from src.brokerrabbit.constants import BOOKING_EXCHANGE
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,9 +24,26 @@ logging.basicConfig(level=logging.INFO)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
-    yield
-    await redis_manager.disconnect()
+    connection_rabbit = await connect_rabbitmq()
+    channel = await connection_rabbit.channel()
+    booking_exchange = await declare_exchange(
+        channel=channel,
+        exc_name=BOOKING_EXCHANGE,
+    )
+    logging.info(f"Обменник готов = {booking_exchange}")
+    app.state.connection_rabbit = connection_rabbit
+    app.state.booking_exchange = booking_exchange
 
+    try:
+        yield
+    finally:
+        if not channel.is_closed:
+            await channel.close()
+        if not connection_rabbit.is_closed:
+            await connection_rabbit.close()
+
+    await redis_manager.disconnect()
+    
 
 app = FastAPI(lifespan=lifespan)
 
